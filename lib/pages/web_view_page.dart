@@ -1,3 +1,4 @@
+import 'package:epay_nubank/pages/confirmation_page.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -10,6 +11,7 @@ class WebViewExample extends StatefulWidget {
 
 class _WebViewExampleState extends State<WebViewExample> {
   late final WebViewController controller;
+  String _cart = 'empty cart';
 
   @override
   void initState() {
@@ -23,22 +25,26 @@ class _WebViewExampleState extends State<WebViewExample> {
         'messageHandler',
         onMessageReceived: (JavaScriptMessage message) {
           print(message.message);
+          setState(() {
+            _cart = message.message;
+          });
         },
       )
       ..addJavaScriptChannel(
         'backToFlutter',
         onMessageReceived: (JavaScriptMessage message) {
           Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ConfirmationPage(cart: _cart)),
+          );
         },
-      );;
+      );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flutter WebView'),
-      ),
       body: WebViewWidget(
         controller: controller,
       ),
